@@ -1,0 +1,210 @@
+{
+  "name": "blazing-trakt-proxy",
+  "version": "1.0.0",
+  "description": "Ultra-secure Trakt OAuth proxy server with database persistence and advanced security features",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "type-check": "tsc --noEmit",
+    "security:setup": "./scripts/blazing-helper.sh setup",
+    "security:check": "./scripts/blazing-helper.sh security-check",
+    "security:generate": "./scripts/blazing-helper.sh generate-key",
+    "health": "./scripts/blazing-helper.sh health",
+    "logs": "./scripts/blazing-helper.sh logs",
+    "monitor": "./scripts/blazing-helper.sh monitor",
+    "production:check": "./scripts/blazing-helper.sh production-check",
+    "production:build": "npm run build && npm run test",
+    "docker:build": "docker build -t blazing-helper-trakt-proxy .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env blazing-helper-trakt-proxy",
+    "db:migrate": "node -e \"console.log('Database migrations handled automatically on startup')\"",
+    "db:backup": "node dist/scripts/backup-database.js",
+    "db:status": "node dist/scripts/database-status.js",
+    "update:deps": "npm update && npm audit fix",
+    "prepare": "husky install"
+  },
+  "keywords": [
+    "trakt",
+    "kodi",
+    "oauth",
+    "proxy",
+    "security",
+    "token-cache",
+    "rate-limiting",
+    "typescript",
+    "nodejs",
+    "api",
+    "database",
+    "postgresql",
+    "sqlite",
+    "railway"
+  ],
+  "author": {
+    "name": "DeFiNiek",
+    "email": "definiek@gmail.com",
+    "url": "https://github.com/DeFiNiek"
+  },
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeFiNiek/blazing-trakt-proxy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DeFiNiek/blazing-trakt-proxy/issues"
+  },
+  "homepage": "https://github.com/DeFiNiek/blazing-trakt-proxy#readme",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.4.1",
+    "bindings": "^1.5.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/bindings": "^1.5.5",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "husky": "^8.0.3",
+    "jest": "^29.7.0",
+    "lint-staged": "^15.2.0",
+    "node-gyp": "^11.4.2",
+    "prettier": "^3.1.1",
+    "rimraf": "^5.0.5",
+    "ts-jest": "^29.1.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run type-check && npm run test"
+    }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/server.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    }
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "eslint:recommended",
+      "@typescript-eslint/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2022,
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    },
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/prefer-const": "error",
+      "@typescript-eslint/no-var-requires": "error",
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
+      ],
+      "prefer-const": "error",
+      "no-var": "error"
+    },
+    "env": {
+      "node": true,
+      "es2022": true
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "printWidth": 100,
+    "tabWidth": 4,
+    "useTabs": false,
+    "bracketSpacing": true,
+    "arrowParens": "avoid"
+  },
+  "files": [
+    "dist/**/*",
+    "src/**/*",
+    "scripts/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "directories": {
+    "lib": "dist",
+    "test": "tests"
+  }
+}
